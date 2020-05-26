@@ -27,10 +27,8 @@ class OrganizationController
      */
     public function add(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-
-        $name = $data['name'];
-        $legalEntity = $data['legalEntity'];
+        $name = $request->get('name');
+        $legalEntity = $request->get('legalEntity');
 
         if (empty($name) || empty($legalEntity)) {
             throw new NotFoundHttpException('Parameters are mandatory');
@@ -74,6 +72,10 @@ class OrganizationController
     public function getAll(): JsonResponse
     {
         $organizations = $this->organizationRepository->findAll();
+
+        dump($organizations);
+        exit;
+
         $data = [];
 
         foreach ($organizations as $organization) {
@@ -83,6 +85,7 @@ class OrganizationController
                 'legalEntity' => $organization->getLegalEntity()
             ];
         }
+
 
         return new JsonResponse($data, Response::HTTP_OK);
     }
@@ -102,10 +105,11 @@ class OrganizationController
             throw new NoResultException();
         }
 
-        $data = json_decode($request->getContent(), true);
+        $name = $request->get('name');
+        $legalEntity = $request->get('legalEntity');
 
-        empty($data['name']) ?: $organization->setName($data['name']);
-        empty($data['legalEntity']) ?: $organization->setLegalEntity($data['name']);
+        $organization->setName($name);
+        $organization->setLegalEntity($legalEntity);
 
         $this->organizationRepository->updateOrganization($organization);
 

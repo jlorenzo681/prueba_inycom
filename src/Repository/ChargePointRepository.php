@@ -25,7 +25,7 @@ class ChargePointRepository extends ServiceEntityRepository
     }
 
 
-    public function saveChargePoint($identity, $cpo): void
+    public function saveChargePoint($identity, $cpo): ChargePoint
     {
         $newChargePoint = new ChargePoint();
 
@@ -35,6 +35,8 @@ class ChargePointRepository extends ServiceEntityRepository
 
         $this->manager->persist($newChargePoint);
         $this->manager->flush();
+
+        return $newChargePoint;
     }
 
     public function updateChargePoint(ChargePoint $chargePoint): ChargePoint
