@@ -2,16 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\Organization;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\NoResultException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Console\Exception\MissingInputException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
-class OrganizationController
+class OrganizationController extends AbstractController
 {
     private $organizationRepository;
 
@@ -31,7 +33,7 @@ class OrganizationController
         $legalEntity = $request->get('legalEntity');
 
         if (empty($name) || empty($legalEntity)) {
-            throw new NotFoundHttpException('Parameters are mandatory');
+            throw new MissingInputException('Parameters are mandatory');
         }
 
         $this->organizationRepository->saveOrganization($name, $legalEntity);
@@ -45,13 +47,13 @@ class OrganizationController
      * @return JsonResponse
      * @throws NoResultException
      */
-    public function get($id): JsonResponse
+    public function get($id): Object
     {
         if ($id === null) {
             throw new MissingMandatoryParametersException('El parametro id es obligatorio');
         }
 
-        $organization = $this->organizationRepository->findOneBy(['id' => $id]);
+        $organization = $this->organizationRepository->find($id);
 
         if ($organization === null) {
             throw new NoResultException;
@@ -67,17 +69,15 @@ class OrganizationController
     }
 
     /**
-     * @Route("api/organization/all", name="get_organizations", methods={"GET"})
+     * @Route("api/organizations/all", name="get_organizations", methods={"GET"})
      */
     public function getAll(): JsonResponse
     {
-        $organizations = $this->organizationRepository->findAll();
-
-        dump($organizations);
-        exit;
+        $organizations = $this->getDoctrine()->getRepository(Organization::class)->findAll();
 
         $data = [];
 
+        /** @var Organization $organization */
         foreach ($organizations as $organization) {
             $data[] = [
                 'id' => $organization->getId(),

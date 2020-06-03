@@ -10,25 +10,37 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
+
+    private $chargePointService;
+    private $organizationService;
+
+    /**
+     * DefaultController constructor.
+     * @param ChargePointService $chargePointService
+     * @param OrganizationService $organizationService
+     */
+    public function __construct(ChargePointService $chargePointService, OrganizationService $organizationService)
+    {
+        $this->chargePointService = $chargePointService;
+        $this->organizationService = $organizationService;
+    }
+
     /**
      * @Route("/", name="index")
-     * @param OrganizationService $organizationService
-     * @param ChargePointService $chargePointService
      * @return Response
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function index(OrganizationService $organizationService, ChargePointService $chargePointService): Response
+    public function index(): Response
     {
-
-        $organizations = $organizationService->getOrganizations();
-        $chargePoints = $chargePointService->getChargePoints();
+        $chargePoints = $this->chargePointService->getChargePoints();
+        $organizatons = $this->chargePointService->getChargePoints();
 
         return $this->render('inicio.html.twig', [
-            'ciudades' => $organizations,
-            'chargePoints' => $chargePoints
+            "chargePoints" => $chargePoints,
+            "organizations" => $organizatons
         ]);
     }
 

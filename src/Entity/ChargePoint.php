@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ChargePointRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,7 +29,7 @@ class ChargePoint
 
     public function __construct()
     {
-        $this->cpo = new ArrayCollection();
+        $this->cpo = new Organization();
     }
 
     public function getId(): ?int

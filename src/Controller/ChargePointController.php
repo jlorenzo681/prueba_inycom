@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\ChargePoint;
 use App\Entity\Organization;
 use App\Repository\ChargePointRepository;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\NoResultException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
-class ChargePointController
+class ChargePointController extends AbstractController
 {
     private $chargePointRepository;
     private $organizationRepository;
@@ -53,13 +55,13 @@ class ChargePointController
      * @return JsonResponse
      * @throws NoResultException
      */
-    public function get($id): JsonResponse
+    public function get($id): Object
     {
         if ($id === null) {
             throw new MissingMandatoryParametersException('Parameter id is mandatory');
         }
 
-        $chargePoint = $this->chargePointRepository->findOneBy(['id' => $id]);
+        $chargePoint = $this->getDoctrine()->getRepository(ChargePoint::class)->find($id);
 
         if ($chargePoint === null) {
             throw new NoResultException;
@@ -75,22 +77,30 @@ class ChargePointController
     }
 
     /**
-     * @Route("api/chargepoint/all", name="get_chargepoints", methods={"GET"})
+     * @Route("api/chargepoints/all", name="get_chargepoints", methods={"GET"})
      */
     public function getAll(): JsonResponse
     {
-        $coches = $this->chargePointRepository->findAll();
-        $data = [];
+        $chargePoints = $this->getDoctrine()->getRepository(ChargePoint::class)->findAll();
+        $result = array();
 
-        foreach ($coches as $coche) {
-            $data[] = [
-                'id' => $coche->getId(),
-                'identity' => $coche->getIdentity(),
-                'cpo' => $coche->getCpo()
-            ];
+        /** @var ChargePoint $chargePoint */
+        foreach ($chargePoints as $key => $chargePoint) {
+
+            $data[$key] = array(
+                'id' => $chargePoint->getId(),
+                'identity' => $chargePoint->getIdentity(),
+                'cpo' => ''
+            );
+
+            if ($chargePoint->getCpo() !== null) {
+                $data[$key]['cpo'] = $chargePoint->getCpo()->getName();
+            }
+
+            $result[] = $data;
         }
 
-        return new JsonResponse($data, Response::HTTP_OK);
+        return new JsonResponse($result, Response::HTTP_OK);
     }
 
     /**
