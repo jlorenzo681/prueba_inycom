@@ -23,7 +23,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Route("api/organization/add", name="save_organization", methods={"POST"})
+     * @Route("api/organization", name="save_organization", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */
@@ -69,7 +69,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Route("api/organizations/all", name="get_organizations", methods={"GET"})
+     * @Route("api/organizations", name="get_organizations", methods={"GET"})
      */
     public function getAll(): JsonResponse
     {
@@ -91,7 +91,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Route("api/organization/update/{id}", name="update_organization", methods={"PUT"})
+     * @Route("api/organization/{id}", name="update_organization", methods={"PUT"})
      * @param $id
      * @param Request $request
      * @return JsonResponse
@@ -117,7 +117,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Route("api/organization/delete/{id}", name="delete_organization", methods={"DELETE"})
+     * @Route("api/organization/{id}", name="delete_organization", methods={"DELETE"})
      * @param $id
      * @return JsonResponse
      * @throws NoResultException

@@ -27,7 +27,7 @@ class ChargePointController extends AbstractController
     }
 
     /**
-     * @Route("api/chargepoint/add", name="save_chargepoint", methods={"POST"})
+     * @Route("api/chargepoint", name="save_chargepoint", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */
@@ -70,14 +70,14 @@ class ChargePointController extends AbstractController
         $data = [
             'id' => $chargePoint->getId(),
             'identity' => $chargePoint->getIdentity(),
-            'cpo' => $chargePoint->getCpo()
+            'cpo' => $chargePoint->getCpo()->getName()
         ];
 
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
-     * @Route("api/chargepoints/all", name="get_chargepoints", methods={"GET"})
+     * @Route("api/chargepoints", name="get_chargepoints", methods={"GET"})
      */
     public function getAll(): JsonResponse
     {
@@ -86,25 +86,25 @@ class ChargePointController extends AbstractController
 
         /** @var ChargePoint $chargePoint */
         foreach ($chargePoints as $key => $chargePoint) {
-
-            $data[$key] = array(
+            $data[$key] = [
                 'id' => $chargePoint->getId(),
                 'identity' => $chargePoint->getIdentity(),
                 'cpo' => ''
-            );
+            ];
 
             if ($chargePoint->getCpo() !== null) {
                 $data[$key]['cpo'] = $chargePoint->getCpo()->getName();
             }
 
-            $result[] = $data;
+            $result[] = $data[$key];
+            $data = array();
         }
 
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
     /**
-     * @Route("api/chargepoint/update/{id}", name="update_chargepoint", methods={"PUT"})
+     * @Route("api/chargepoint/{id}", name="update_chargepoint", methods={"PUT"})
      * @param $id
      * @param Request $request
      * @return JsonResponse
@@ -112,34 +112,26 @@ class ChargePointController extends AbstractController
      */
     public function update($id, Request $request): JsonResponse
     {
-        $chargePoint = $this->chargePointRepository->findOneBy(['id' => $id]);
+        $chargePoint = $this->chargePointRepository->find($id);
 
         if ($chargePoint === null) {
             throw new NoResultException();
         }
 
-        $data = json_decode($request->getContent(), true);
-
-        empty($data['identity']) ?: $chargePoint->setIdentity($data['identity']);
-        empty($data['cpo']) ?: $chargePoint->setCpo($data['cpo']);
-
         $identity = $request->get('identity');
         $cpo = $request->get('cpo');
-
-        /** @var Organization $cpoObject */
         $cpoObject = $this->organizationRepository->find($cpo);
 
         $chargePoint->setIdentity($identity);
         $chargePoint->setCpo($cpoObject);
 
-        $newChargePoint = $this->chargePointRepository->saveChargePoint($identity, $cpoObject);
-        $cpoObject->addChargePoint($newChargePoint);
+        $this->chargePointRepository->updateChargePoint($chargePoint);
 
         return new JsonResponse(['status' => 'Chargepoint updated'], Response::HTTP_OK);
     }
 
     /**
-     * @Route("api/chargepoint/delete/{id}", name="delete_chargepoint", methods={"DELETE"})
+     * @Route("api/chargepoint/{id}", name="delete_chargepoint", methods={"DELETE"})
      * @param $id
      * @return JsonResponse
      * @throws NoResultException
