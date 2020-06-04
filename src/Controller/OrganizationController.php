@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Organization;
+use App\Repository\ChargePointRepository;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,10 +17,14 @@ use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 class OrganizationController extends AbstractController
 {
     private $organizationRepository;
+    private $chargePointRepository;
 
-    public function __construct(OrganizationRepository $cocheRepository)
+    public function __construct(
+        OrganizationRepository $cocheRepository,
+        ChargePointRepository $chargePointRepository)
     {
         $this->organizationRepository = $cocheRepository;
+        $this->chargePointRepository = $chargePointRepository;
     }
 
     /**
@@ -86,7 +91,6 @@ class OrganizationController extends AbstractController
             ];
         }
 
-
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
@@ -128,6 +132,12 @@ class OrganizationController extends AbstractController
 
         if ($organization === null) {
             throw new NoResultException();
+        }
+        $chargePoints = $organization->getChargePoints();
+
+        foreach ($chargePoints as $chargePoint) {
+            $chargePoint->setCpo(null);
+            $this->chargePointRepository->updateChargePoint($chargePoint);
         }
 
         $this->organizationRepository->deleteOrganization($organization);
