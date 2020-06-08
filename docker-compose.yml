@@ -3,8 +3,7 @@ version: '3'
 
 services:
   database:
-    build:
-      context: docker/database
+    image: mariadb:latest
     environment:
     - MYSQL_DATABASE=${DATABASE_NAME}
     - MYSQL_USER=${DATABASE_USER}
@@ -39,6 +38,5 @@ services:
     - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
     - ./docker/nginx/sites/:/etc/nginx/sites-available
     - ./docker/nginx/conf.d/:/etc/nginx/conf.d
-
     ports:
     - "8000:80"
