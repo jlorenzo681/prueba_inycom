@@ -12,7 +12,6 @@ use Symfony\Component\Console\Exception\MissingInputException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
@@ -34,11 +33,13 @@ class ChargePointController extends AbstractController
      */
     public function add(Request $request): JsonResponse
     {
-        $identity = $request->request->get('identity');
-        $cpo = $request->request->get('cpo');
+        $data = json_decode($request->getContent(), true);
+
+        $identity = $data['identity'];
+        $cpo = $data['cpo'];
 
         if (empty($identity) || empty($cpo)) {
-            throw new NotFoundHttpException('Parameters are mandatory');
+            throw new MissingInputException('Parameters are mandatory');
         }
 
         /** @var Organization $cpoObject */
