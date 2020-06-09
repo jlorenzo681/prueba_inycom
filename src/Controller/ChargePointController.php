@@ -8,6 +8,7 @@ use App\Repository\ChargePointRepository;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Console\Exception\MissingInputException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,8 +34,8 @@ class ChargePointController extends AbstractController
      */
     public function add(Request $request): JsonResponse
     {
-        $identity = $request->get('identity');
-        $cpo = $request->get('cpo');
+        $identity = $request->request->get('identity');
+        $cpo = $request->request->get('cpo');
 
         if (empty($identity) || empty($cpo)) {
             throw new NotFoundHttpException('Parameters are mandatory');
@@ -118,8 +119,15 @@ class ChargePointController extends AbstractController
             throw new NoResultException();
         }
 
-        $identity = $request->get('identity');
-        $cpo = $request->get('cpo');
+        $data = json_decode($request->getContent(), true);
+
+        $identity = $data['identity'];
+        $cpo = $data['cpo'];
+
+        if (empty($identity) || empty($cpo)) {
+            throw new MissingInputException('Parameters are mandatory');
+        }
+
         $cpoObject = $this->organizationRepository->find($cpo);
 
         $chargePoint->setIdentity($identity);

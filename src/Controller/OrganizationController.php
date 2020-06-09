@@ -34,8 +34,8 @@ class OrganizationController extends AbstractController
      */
     public function add(Request $request): JsonResponse
     {
-        $name = $request->get('name');
-        $legalEntity = $request->get('legalEntity');
+        $name = $request->request->get('name');
+        $legalEntity = $request->request->get('legalEntity');
 
         if (empty($name) || empty($legalEntity)) {
             throw new MissingInputException('Parameters are mandatory');
@@ -109,8 +109,14 @@ class OrganizationController extends AbstractController
             throw new NoResultException();
         }
 
-        $name = $request->get('name');
-        $legalEntity = $request->get('legalEntity');
+        $data = json_decode($request->getContent(), true);
+
+        $name = $data['name'];
+        $legalEntity = $data['legalEntity'];
+
+        if (empty($name) || empty($legalEntity)) {
+            throw new MissingInputException('Parameters are mandatory');
+        }
 
         $organization->setName($name);
         $organization->setLegalEntity($legalEntity);
