@@ -1,5 +1,5 @@
-El proyecto consiste en una api con 2 recursos llamados Organization y ChargePoint, con una relación de dependencia.
-Para cada uno de ellos se implementan las acciones leer, editar, eliminar y crear.
+El proyecto consiste en una Rest API con 2 recursos llamados Organization y ChargePoint, con una relación de dependencia.
+Para cada uno de ellos se implementan los métodos GET/PUT/POST/DELETE, además de un método adicional para listar todos los registros.
 
 
 Para desplegar la API se necesita instalar el binario de Symfony y ejecutar los siguientes pasos en el directorio
