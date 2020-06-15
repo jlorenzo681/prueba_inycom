@@ -1,3 +1,7 @@
+El proyecto consiste en una api con 2 recursos llamados Organization y ChargePoint, con una relación de dependencia.
+Para cada uno de ellos se implementan las acciones leer, editar, eliminar y crear.
+
+
 Para desplegar la API se necesita instalar el binario de Symfony y ejecutar los siguientes pasos en el directorio
 del proyecto:
     1. php bin/console doctrine:migrations:migrate
@@ -5,5 +9,3 @@ del proyecto:
 
 La configuración de la BD debe ser la siguiente, de lo contrario se debe modificar en el fichero .env:
     root:root@127.0.0.1:3306/inycom
-
-La parte del cliente web no está finalizada
