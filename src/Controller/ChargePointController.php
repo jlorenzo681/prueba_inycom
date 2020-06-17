@@ -48,7 +48,7 @@ class ChargePointController extends AbstractController
         $newChargePoint = $this->chargePointRepository->saveChargePoint($identity, $cpoObject);
         $cpoObject->addChargePoint($newChargePoint);
 
-        return new JsonResponse(['status' => 'Chargepoint saved'], Response::HTTP_CREATED);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
@@ -136,7 +136,7 @@ class ChargePointController extends AbstractController
 
         $this->chargePointRepository->updateChargePoint($chargePoint);
 
-        return new JsonResponse(['status' => 'Chargepoint updated'], Response::HTTP_OK);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
