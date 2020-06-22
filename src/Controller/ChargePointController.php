@@ -7,7 +7,6 @@ use App\Entity\Organization;
 use App\Repository\ChargePointRepository;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\NoResultException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Exception\MissingInputException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
-class ChargePointController extends AbstractController
+class ChargePointController
 {
+
     private $chargePointRepository;
     private $organizationRepository;
 
@@ -59,21 +59,27 @@ class ChargePointController extends AbstractController
      */
     public function get($id): Object
     {
+        $data = null;
+
         if ($id === null) {
             throw new MissingMandatoryParametersException('Parameter id is mandatory');
         }
 
-        $chargePoint = $this->getDoctrine()->getRepository(ChargePoint::class)->find($id);
+        /** @var ChargePoint $chargePoint */
+        $chargePoint = $this->chargePointRepository->findAll();
 
         if ($chargePoint === null) {
             throw new NoResultException;
         }
 
-        $data = [
-            'id' => $chargePoint->getId(),
-            'identity' => $chargePoint->getIdentity(),
-            'cpo' => $chargePoint->getCpo()->getName()
-        ];
+        $organization = $chargePoint->getCpo();
+        if ($organization !== null) {
+            $data = [
+                'id' => $chargePoint->getId(),
+                'identity' => $chargePoint->getIdentity(),
+                'cpo' => $organization->getName()
+            ];
+        }
 
         return new JsonResponse($data, Response::HTTP_OK);
     }
@@ -83,7 +89,7 @@ class ChargePointController extends AbstractController
      */
     public function getAll(): JsonResponse
     {
-        $chargePoints = $this->getDoctrine()->getRepository(ChargePoint::class)->findAll();
+        $chargePoints = $this->chargePointRepository->findAll();
         $result = array();
 
         /** @var ChargePoint $chargePoint */

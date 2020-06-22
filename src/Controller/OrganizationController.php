@@ -6,7 +6,6 @@ use App\Entity\Organization;
 use App\Repository\ChargePointRepository;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\NoResultException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Exception\MissingInputException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
-class OrganizationController extends AbstractController
+class OrganizationController
 {
     private $organizationRepository;
     private $chargePointRepository;
@@ -45,7 +44,7 @@ class OrganizationController extends AbstractController
 
         $this->organizationRepository->saveOrganization($name, $legalEntity);
 
-        return new JsonResponse(['status' => 'Organization saved'], Response::HTTP_CREATED);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
@@ -80,7 +79,7 @@ class OrganizationController extends AbstractController
      */
     public function getAll(): JsonResponse
     {
-        $organizations = $this->getDoctrine()->getRepository(Organization::class)->findAll();
+        $organizations = $this->organizationRepository->findAll();
 
         $data = [];
 
@@ -125,7 +124,7 @@ class OrganizationController extends AbstractController
 
         $this->organizationRepository->updateOrganization($organization);
 
-        return new JsonResponse(['status' => 'Organization updated'], Response::HTTP_OK);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
@@ -141,6 +140,13 @@ class OrganizationController extends AbstractController
         if ($organization === null) {
             throw new NoResultException();
         }
+
+        $data = [
+            'id' => $organization->getId(),
+            'name' => $organization->getName(),
+            'legalEntity' => $organization->getLegalEntity()
+        ];
+
         $chargePoints = $organization->getChargePoints();
 
         foreach ($chargePoints as $chargePoint) {
@@ -150,6 +156,6 @@ class OrganizationController extends AbstractController
 
         $this->organizationRepository->deleteOrganization($organization);
 
-        return new JsonResponse(['status' => 'Organization deleted'], Response::HTTP_OK);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 }
