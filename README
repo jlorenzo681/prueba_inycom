@@ -1,7 +1,10 @@
 El proyecto consiste en una Rest API con 2 recursos llamados Organization y ChargePoint, con una relación de dependencia 1->muchos.
 Para cada uno de ellos se implementan los métodos GET/PUT/POST/DELETE, además de un método adicional para listar todos los registros.
 
+DESPLIEGUE DOCKER
+Levantar los servicios con docker-compose up
 
+DESPLIEGUE MANUAL
 Para desplegar la API se necesita instalar el binario de Symfony y ejecutar los siguientes pasos en el directorio
 del proyecto:
     1. php bin/console doctrine:migrations:migrate
